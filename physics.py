@@ -3,25 +3,25 @@ from settings import *
 from math import *
 
 class Physics:
-    def __init__(self, G):
-        self.G = G
+    def __init__(self):
+        pass
 
     def calculate_gravity(self, planet1, planet2):
-        displacement_x = planet2.x - planet1.x
-        displacement_y = planet2.y - planet1.y
+        dx = planet2.x - planet1.x
+        dy = planet2.y - planet1.y
 
-        distance = sqrt(displacement_x**2 + displacement_y**2)
-        MIN_DISTANCE = 1.1 * (planet1.radius + planet2.radius)
-        distance = max(distance, MIN_DISTANCE)
+        distance_squared = dx**2 + dy**2 + EPSILON**2
+        distance = sqrt(distance_squared)
+        
+        force = G * planet1.mass * planet2.mass / distance_squared
 
-        force_scaled = G * planet1.mass * planet2.mass / distance**3 #middle step in calculation
+        fx = force * dx / distance
+        fy = force * dy / distance
 
-        fx = force_scaled * displacement_x
-        fy = force_scaled * displacement_y
 
         return fx, fy
     
-    def update_physics(self, planets, TIME_STEP):    
+    def update_all(self, planets):    
         for planet in planets:
             planet.ax, planet.ay = 0.0, 0.0   
 
@@ -30,9 +30,9 @@ class Physics:
                 fx, fy = self.calculate_gravity(planets[i], planets[j])
                 planets[i].ax += fx / planets[i].mass
                 planets[i].ay += fy / planets[i].mass
-                planets[j].ax -= fx / planet[j].mass
-                planet[j].ay -= fy / planet[j].mass
+                planets[j].ax -= fx / planets[j].mass
+                planets[j].ay -= fy / planets[j].mass
                 
         for planet in planets:
-            planet.update_velocity(TIME_STEP)
-            planet.update_position(TIME_STEP)
+            planet.update_velocity()
+            planet.update_position()
