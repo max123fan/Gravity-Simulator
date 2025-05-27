@@ -2,6 +2,7 @@ import pygame
 from settings import *
 from planet import Planet
 from planetManager import PlanetManager
+from trailManager import TrailManager
 from physics import Physics
 from interface import Interface
 
@@ -11,18 +12,16 @@ def main():
     clock = pygame.time.Clock()
     interface = Interface(screen)
     paused = False
-    trails = False
+    trails = True
+    #(mass, radius, x, y, vx, vy, color=(255, 255, 255)):
 
-    #sun = Planet(1, 10, -0.97000436, 0.24308753, 0.46620368, 0.43236573, (255, 255, 0))
-    #earth = Planet(1, 10, 0, 0, -0.93240737, -0.86473146, (100, 100, 255),)
-    #moon = Planet(1, 10, 0.97000436, -0.24308753, 0.46620368, 0.43236573, (220, 220, 220))
-    planet1 = Planet(130, 10, -1, 0, 0, -15, (255, 0, 0))#turqoise
-    planet2 = Planet(130, 10, 1, 0, 0, 15, (0, 255, 0))#purple
-    planet3 = Planet(100, 8, 0, 2, 25, 0, (0, 0, 255))#white
-    planet4 = Planet(100, 8, 0, -2, -25, 0, (255, 255, 0))#white
-    planets = [planet1, planet2, planet3, planet4]
+    # planet1 = Planet(1200, 8, -100, -300, 0, -10, (255, 0, 0))
+    # planet2 = Planet(600, 10, 100, -300, 0, 50, (0, 255, 0))
+    # planet3 = Planet(700, 6, 100, 300, 0, 10, (0, 0, 255))
+    planet4 = Planet(600, 5, 100, 0, 0, 0, (255, 0, 184))
+    planet5 = Planet(800, 5, -100, 0, 100, 0, (0, 255, 202))
 
-    planetManager = PlanetManager(planets)
+    planetManager = PlanetManager([planet4, planet5])
 
     running = True
     while running:

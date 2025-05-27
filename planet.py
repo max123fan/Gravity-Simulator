@@ -37,20 +37,25 @@ class Planet:
         self.vx = (self.x - self.prev_x) / DT
         self.vy = (self.y - self.prev_y) / DT
 
+    def reset_acceleration(self):
+        self.ax, self.ay = 0, 0
+
 
     def draw(self, screen):
         screen_x, screen_y = cartesian_to_screen_coords(self.x, self.y)
         if check_within_drawing_range(screen_x, screen_y, self.radius):
-            pygame.draw.circle(screen, self.color, (screen_x, screen_y), self.radius)
+            pygame.draw.circle(screen, self.color, (screen_x, screen_y), self.radius / SCALE)
 
         
     def update_trail(self):
         self.positions.append((self.x, self.y))
+        self.color_history.append(self.color)
         if len(self.positions) > TRAIL_LENGTH:
             self.positions.pop(0)
     
     def clear_trail(self):
         self.positions = []
+        self.color_history = []
 
     def draw_trail(self, screen):
         if not self.positions:
@@ -64,6 +69,6 @@ class Planet:
             fade_ratio = i / len(self.positions)
             alpha = int(200 * fade_ratio)
             
-            trail_color = (*self.color, alpha)
+            trail_color = (*self.color_history[i], alpha)
             
             pygame.gfxdraw.filled_circle(screen, screen_x, screen_y, self.trail_size, trail_color)
