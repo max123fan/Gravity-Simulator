@@ -29,7 +29,7 @@ class PlanetManager:
                 self.collision_fx_manager.add_merge_effect(
                 (planet1.x + planet2.x) / 2,
                 (planet1.y + planet2.y) / 2,
-                int(planet1.radius + planet2.radius), 
+                planet1.radius + planet2.radius, 
                 v_rel)
         
             for planet1, planet2 in bounce_actions:
@@ -40,7 +40,7 @@ class PlanetManager:
                 self.collision_fx_manager.add_bounce_effect(
                 (planet1.x + planet2.x) / 2, 
                 (planet1.y + planet2.y) / 2, 
-                int(planet1.radius + planet2.radius),
+                planet1.radius + planet2.radius,
                 v_rel, 
                 normal_angle)
 
@@ -49,12 +49,14 @@ class PlanetManager:
         
         if settings.trails:
             self.trail_manager.update_trails(self)
+
+
        
 
     def draw_planets(self):
         for planet in self.planets:
             planet.draw(self.screen)
-
+            
     def draw_collision_fx(self):
         self.collision_fx_manager.draw()
 
@@ -65,14 +67,16 @@ class PlanetManager:
     def clear_trails(self):
         self.trail_manager.clear_trails()
 
+    def clear_collision_fx(self):
+        self.collision_fx_manager.clear_effects()
+
     def get_collision_pairs(self):
-        """Brute-force collision checking (simple but works)"""
         pairs = []
         for i in range(len(self.planets)):
             for j in range(i+1, len(self.planets)):
                 p1 = self.planets[i]
                 p2 = self.planets[j]
-                distance = calculate_distance(p1, p2)
+                distance = calculate_distance(p1.x, p1.y, p2.x, p2.y)
                 if distance < p1.radius + p2.radius:
                     pairs.append((p1, p2, distance))
         return pairs
@@ -82,3 +86,19 @@ class PlanetManager:
         if planet in self.planets:
             self.planets.remove(planet)
             self.trail_manager.stop_tracking_planet(planet)
+
+    def set_selected_planet(self, selected_planet):
+        for planet in self.planets:
+            planet.is_selected = False
+        if selected_planet == None:
+            return
+        selected_planet.is_selected = True
+
+    def check_mouse_on_planet(self, screen_mouse_coords):
+        cartesian_mouse_coords = screen_coords_to_cartesian(*screen_mouse_coords)
+        for planet in self.planets:
+            if calculate_distance(*cartesian_mouse_coords, planet.x, planet.y) < planet.radius:
+                return planet
+            
+    
+

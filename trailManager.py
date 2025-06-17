@@ -60,11 +60,8 @@ class TrailManager:
                 continue
                 
             fade_progress = point_index / max(1, len(trail_data))
-            opacity = int(200 * fade_progress)
+            opacity = int(100 * fade_progress ** 2)
             
-            if opacity < 10:
-                continue
-                
             trail_color_with_opacity = (color[0], color[1], color[2], opacity)
             pygame.gfxdraw.filled_circle(
                 self.screen,  # Surface (positional)

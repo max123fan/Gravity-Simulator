@@ -6,6 +6,9 @@ from settings import *
 def cartesian_to_screen_coords(x, y):
     return (x / settings.scale + settings.WIDTH // 2, -y / settings.scale + settings.HEIGHT // 2)
 
+def screen_coords_to_cartesian(x, y):
+    return ((x - settings.WIDTH / 2) * settings.scale, (-y + settings.HEIGHT / 2) * settings.scale)
+
 def check_within_drawing_range(screen_x, screen_y, radius):
     return (
         -radius <= screen_x <= settings.WIDTH + radius and
@@ -18,8 +21,8 @@ def color_interpolate(color1, color2, ratio):
         for i in range(3)
     )
 
-def calculate_distance(planet1, planet2):
-    return math.sqrt((planet1.x - planet2.x)**2 + (planet1.y - planet2.y)**2)
+def calculate_distance(x1, y1, x2, y2):
+    return math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
 
 def calculate_normal_angle(planet1, planet2):
     dx = planet2.x - planet1.x
@@ -30,6 +33,15 @@ def calculate_v_rel(planet1, planet2):
     vx_rel = planet2.vx - planet1.vx
     vy_rel = planet2.vy - planet1.vy
     return math.sqrt(vx_rel**2 + vy_rel**2)
+
+def calculate_angle(x1, y1, x2, y2):
+    return math.atan2((y2 - y1) /(x2 - x1))
+
+def first_sig_figs(x, sig):
+    if x == 0:
+        return '0'
+    s = f"{x:.{sig}g}"
+    return s
 
 def calculate_total_energy(planets):
     kinetic_energy = 0

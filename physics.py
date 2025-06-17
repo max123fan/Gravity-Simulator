@@ -1,6 +1,9 @@
 import pygame
 from settings import *
+from events import *
 from utils import *
+
+
 import math
 import random
 
@@ -35,21 +38,14 @@ class Physics:
         b = (distance * sin_theta) / total_radius
         b = min(max(b, 0), 1)
 
-        # Mass ratio factor (heavily favors merging if one body dominates)
         mass_ratio = max(planet1.mass, planet2.mass) / min(planet1.mass, planet2.mass)
         mass_merge_boost = 1 + 0.4 * math.log(mass_ratio + 1)
 
-        # Compute adjusted velocity threshold
         v_merge = 1.3 * v_escape * (1 - b**2) * mass_merge_boost
-        print(v_merge, v_rel)
 
-        #print(f"v_rel: {v_rel:.2f}, v_merge: {v_merge:.2f}, b: {b:.2f}, mass_ratio: {mass_ratio:.2f}")
-
-        # Random chance when near threshold and not head-on
         if settings.RANDOMNESS_IN_COLLISIONS and abs(v_rel - v_merge) / v_merge < 0.1:
             return random.random() < (1 - b)
 
-        # Guaranteed merge for very unequal sizes (override)
         if mass_ratio >= 5:
             return True
 
@@ -79,7 +75,7 @@ class Physics:
 
     
     def handle_bounce(self, planet1, planet2):
-        distance = calculate_distance(planet1, planet2)
+        distance = calculate_distance(planet1.x, planet1.y, planet2.x, planet2.y)
         nx, ny = (planet2.x - planet1.x)/distance, (planet2.y - planet1.y)/distance
         dv_parallel = (planet2.vx - planet1.vx) * nx + (planet2.vy - planet1.vy) * ny
 
@@ -144,6 +140,8 @@ class Physics:
             planet_manager.trail_manager.stop_tracking_planet(planet1)
             planet_manager.trail_manager.stop_tracking_planet(planet2)
             self.handle_merge(planet1, planet2, planet_manager)
+            merge_event = pygame.event.Event(PLANET_MERGED, {'planet1': planet1, 'planet2': planet2})
+            pygame.event.post(merge_event)
 
             planet_manager.trail_manager.start_tracking_planet(planet1)
 
